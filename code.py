@@ -8,8 +8,9 @@ import adafruit_bme680
 from adafruit_minimqtt import adafruit_minimqtt
 
 #---mqtt settings---
-TOPIC_HUMIDITY = "sensors/humidity"
-TOPIC_TEMP = "sensors/temperature"
+SENSOR_ID = "bme688-001"
+TOPIC_HUMIDITY = f"cruxtel/mf/inorganic/spinbot/env/lq/{SENSOR_ID}/humidity" # relative hum, %
+TOPIC_TEMP = f"cruxtel/mf/inorganic/spinbot/env/lq/{SENSOR_ID}/temperature" # deg C
 
 PUBLISH_INTERVAL = 30  # seconds
 
@@ -34,7 +35,7 @@ mqtt_client = adafruit_minimqtt.MQTT(
     socket_pool=pool,
     ssl_context = ssl_context,
     is_ssl = True,
-    client_id="esp32-humidity-sensor-01",
+    client_id=f"cruxtel-{SENSOR_ID}",
 )
 
 def connect_mqtt():
@@ -59,8 +60,8 @@ while True:
 
         print(f"Humidity: {humidity:.1f}%  Temperature: {temperature:.1f} C")
 
-        mqtt_client.publish(TOPIC_HUMIDITY, f"{humidity:.2f}")
-        mqtt_client.publish(TOPIC_TEMP, f"{temperature:.2f}")
+        mqtt_client.publish(TOPIC_HUMIDITY, f"{humidity:.2f}", retain= True)
+        mqtt_client.publish(TOPIC_TEMP, f"{temperature:.2f}", retain=True)
 
         time.sleep(PUBLISH_INTERVAL)
 
